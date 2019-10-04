@@ -1,0 +1,294 @@
+---
+title: "Astralia Temperature"
+output: pdf_document
+---
+
+
+```{r}
+#install.packages("devtools")
+#devtools::install_github("FinYang/tsdl")
+library(tsdl)
+```
+
+```{r}
+tsdl
+```
+
+
+```{r}
+first_few = 10
+for(i in 1:first_few)  cat("i =", i, attr(tsdl[[i]], "subject"), "\n")
+```
+
+
+```{r}
+k = 90
+length(tsdl[[k]])
+attr(tsdl[[k]], "subject")
+attr(tsdl[[k]], "source")
+attr(tsdl[[k]], "description")
+```
+
+```{r}
+data = tsdl[[k]]
+data = array(data)
+data_ts <- ts(data)
+ts.plot(data_ts,main  = "Temperature in Australia")
+mean(data_ts)
+var(data_ts)
+```
+Not stationary: obvious seasonarity at lag = 12. No obvious trend. No obvious change of variance.
+
+```{r acf_pacf}
+op <- par(mfrow = c(1,2))
+acf(data_ts,lag.max = 50)
+pacf(data_ts,lag.max = 50)
+par(op)
+```
+There may exists a trend since acf remains non-zero for a long period. The seasonarity has a period of 12 approximately. It makes sense since we expect the temperature to change periodically every year.
+
+Box-Cox Transformation
+```{r message=FALSE,fig.height=6,fig.width=6,fig.show='hold'}
+# Transform data using boxcox()
+require(MASS)
+bcTransform <- boxcox(data_ts ~ as.numeric(1:length(data_ts)))
+lambda = bcTransform$x[which(bcTransform$y == max(bcTransform$y))]
+lambda
+```
+The optimal lamda is 0.505, which is approximately 0.5. Therefore, I used sqrt(data) in terms of the convenience for transforming the data back.
+
+```{r sqrt_tranform}
+y.sqrt = sqrt(data_ts)
+ts.plot(y.sqrt,main = "square root")
+var(y.sqrt)
+```
+
+
+Draw acf/pacf of transformed data
+```{r}
+op <- par(mfrow = c(1,2))
+acf(y.sqrt,lag.max = 50)
+pacf(y.sqrt,lag.max = 50)
+par(op)
+```
+
+
+First, De-seasonarity at lag = 12
+```{r}
+data.season.diff12 <- diff(y.sqrt,12)
+ts.plot(data.season.diff12,main = "De-season at lag=12",ylab=expression(paste(nabla,12,Y)))
+var(data.season.diff12)
+```
+The variance decreases significantly, so this step is necessary and significant. Now, we take a look at its acf/pacf.
+
+
+```{r}
+op <- par(mfrow = c(1,2))
+acf(data.season.diff12,lag.max =30, main = "de-seasonrity")
+pacf(data.season.diff12,lag.max = 48, main = "de-seasonrity")
+par(op)
+```
+
+de-seasonarity for the second time
+```{r}
+data.season.diff12.twice <- diff(data.season.diff12,12)
+ts.plot(data.season.diff12.twice,main = "De-seasonarity for the second time", ylab=expression(paste(nabla,12,nabla,12,Y)))
+var(data.season.diff12.twice)
+
+op <- par(mfrow = c(1,2))
+acf(data.season.diff12.twice,lag.max =60, main = "de-seasonrity second time")
+pacf(data.season.diff12.twice,lag.max = 60, main = "de-seasonrity second time")
+par(op)
+```
+
+
+There is no obvious trend, but I will de-trend to see whether the variance decreaes. If the variance increaes, that means this step is unnecessary.
+```{r}
+data.trend.diff1 <- diff(data.season.diff12,1)
+ts.plot(data.trend.diff1,main = "De-trend at lag=1", ylab=expression(paste(nabla,1,nabla,12,Y)))
+var(data.trend.diff1)
+```
+The variance increases, so we overdifferenced.
+
+Model identification: 
+```{r}
+op <- par(mfrow = c(1,2))
+acf(data.season.diff12,lag.max =100, main = "de-seasonrity")
+pacf(data.season.diff12,lag.max = 100, main = "de-seasonrity")
+par(op)
+```
+
+Recall: what does acf/pacf look like (de-seasoned data)? D = 1, d = 0, s = 12 (b/c we deseasonarity once at lag = 12, no de-trend.)
+
+First look at the acf/pacf at lag = 12k to determine P and Q.
+ACF not equal to zero at lag = 12 and equal to zero at lag = 24, 36, 48 - SMA component exists. Suspect, Q = 1,2.
+PACF not equal to zero at lag = 12, 24, 36, 48. However, at lag = 36, 48 pacf almost lie in the C.I. So suspect P = 1,2 (if cannot find the right model, consider P = 3,4)
+
+Second look at the acf/pacf at lag = 1,2...12 to determine p and q.
+```{r}
+op <- par(mfrow = c(1,2))
+acf(data.season.diff12,lag.max =12, main = "de-seasonrity")
+pacf(data.season.diff12,lag.max = 12, main = "de-seasonrity")
+par(op)
+```
+It seems like ACF lies within the C.I. for all lag = 1,...12. Guess: ma component is not significant. However, if we look more closely, the acf lies on the C.I. at lag = 2,4,5, and turns zero after that. Therefore, suspect q = 0, 2,4,5 
+
+PACF almost lie within the C.I. for all lag = 1,...,12. So suspect p = 0,2,5
+
+
+Try a pure SARMA(0,0,0)*(2,1,1)
+```{r}
+SARMA.0.0.2.1 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(2,1,1), period = 12))
+SARMA.0.0.4.1 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(4,1,1), period = 12))
+SARMA.5.2.4.1 <- arima(y.sqrt,order = c(5,0,2),seasonal = list(order = c(4,1,1), period = 12))
+
+fit = SARMA.0.0.2.1
+ts.plot(residuals(fit),main = "Fitted Residuals of SARMA(0,0,0)*(2,1,1)")
+mean(residuals(fit))
+var(residuals(fit))
+
+h = 15
+Box.test(residuals(fit), lag = h, type=c("Box-Pierce"),fitdf = 3)
+Box.test(residuals(fit), lag = h, type=c("Ljung-Box"),fitdf = 3)
+Box.test(residuals(fit)**2, lag = h, type=c("Ljung-Box"),fitdf = 0)
+shapiro.test(residuals(fit))
+
+op <- par(mfrow = c(1,2))
+acf(residuals(fit),lag.max = 50, main = "residuals")
+pacf(residuals(fit),lag.max = 50, main = "residuals")
+par(op)
+# what can I conclude from this?
+# p = 0? q = 5?
+```
+All test failed, acf of the residuals not equal to 0 at lag = 5, pacf all lie within the C.I., so try "p = 0, q = 5"
+
+
+```{r}
+SARMA.0.5.2.1 <- arima(y.sqrt,order = c(0,0,5),seasonal = list(order = c(2,1,1), period = 12))
+SARMA.0.5.2.0 <- arima(y.sqrt,order = c(0,0,5),seasonal = list(order = c(2,1,0), period = 12))
+SARMA.0.0.2.0 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(2,1,0), period = 12))
+SARMA.0.0.2.1 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(2,1,1), period = 12))
+SARMA.0.0.3.0 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(3,1,0), period = 12))
+SARMA.0.0.4.0 <- arima(y.sqrt,order = c(0,0,0),seasonal = list(order = c(4,1,0), period = 12))
+SARMA.2.0.2.0 <- arima(y.sqrt,order = c(2,0,0),seasonal = list(order = c(2,1,0), period = 12))
+SARMA.5.4.2.0 <- arima(y.sqrt,order = c(5,0,4),seasonal = list(order = c(2,1,0), period = 12))
+SARMA.4.4.2.1 <- arima(y.sqrt,order = c(4,0,4),seasonal = list(order = c(2,1,1), period = 12))
+SARMA.4.4.2.0.special <- arima(y.sqrt,order = c(4,0,4),seasonal = list(order = c(2,1,0), period =12), fixed = c(NA,0,NA,NA,NA,0,NA,NA,NA,NA))
+
+SARMA.4.3.2.0 <- arima(y.sqrt,order = c(4,0,3),seasonal = list(order = c(2,1,0), period = 12))
+SARMA.0.4.2.0 <- arima(y.sqrt,order = c(0,0,4),seasonal = list(order = c(2,1,0), period = 12))
+```
+
+```{r}
+fit = SARMA.4.4.2.1
+ts.plot(residuals(fit),main = "Fitted Residuals of SARMA(4,0,4)*(2,1,1)")
+mean(residuals(fit))
+var(residuals(fit))
+h = 16
+Box.test(residuals(fit), lag = h, type=c("Box-Pierce"),fitdf = 11)
+Box.test(residuals(fit), lag = h, type=c("Ljung-Box"),fitdf = 11)
+Box.test(residuals(fit)**2, lag = h, type=c("Ljung-Box"),fitdf = 0)
+shapiro.test(residuals(fit))
+```
+Passed all the tests.
+
+Since not all coefficients are significant, and sma part has unit root. Fit specific model with the coefficients fixed.
+```{r}
+arima(y.sqrt,order = c(0,0,5),seasonal = list(order = c(2,1,1), period =12), fixed = c(0,0,0,0,NA,NA,NA,NA))
+```
+
+
+```{r}
+library(qpcR)
+
+h = sqrt(length(tsdl[[k]]))
+
+P = c(2,3)
+Q = c(0,1)
+p = c(0,2)
+q = c(0,2,4,5)
+aicc_array = c()
+
+# create a dataframe to store i,j,e,f, and AICC values
+aicc_data = data.frame()
+col.i = c()
+col.j = c()
+col.e = c()
+col.f = c()
+col.aicc = c()
+
+# run for loop
+for (i in P){
+  for (j in Q){
+    for (e in p){
+      for (f in q){
+        print(i)
+        print(j)
+        print(e)
+        print(f)
+        print("test")
+        # 2121 -> non-finte
+        if (!(i == 3 & j ==1 & e == 2 & f==4)){
+          SARMA.i.j.e.f <- arima(y.sqrt,order = c(e,0,f),seasonal = list(order = c(i,1,j), period =12))
+          col.i = c(col.i,i)
+          col.j = c(col.j,j)
+          col.e = c(col.e,e)
+          col.f = c(col.f,f)
+          col.aicc = c(col.aicc, AICc(SARMA.i.j.e.f))
+        }
+        else{
+          col.i = c(col.i,i)
+          col.j = c(col.j,j)
+          col.e = c(col.e,e)
+          col.f = c(col.f,f)
+          col.aicc = c(col.aicc, NA)
+        }
+      }
+    }
+  }
+}
+aicc_data = data.frame(p = col.e, q = col.f, P = col.i, Q = col.j, aicc = col.aicc)
+aicc_data[order(aicc_data$aicc),] # from smallest to largest
+```
+
+
+
+
+
+CHECK similarity to WN
+```{r}
+ar(residuals(fit), aic = TRUE, order.max = NULL, method = c("yule-walker"))
+```
+
+Now we have three model to choose from: SARMA.1.1.0.1; SARMA.1.1.1.2; SARMA.2.2.1.1
+
+Diagnostic SARMA.1.1.0.1
+```{r}
+h = floor(sqrt(length(tsdl[[k]]))) # approximately 15
+
+fit = SARMA.1.1.0.1
+ts.plot(residuals(fit),main = "Fitted Residuals of SARMA(1,0,1)*(0,1,1)")
+mean(residuals(fit))
+var(residuals(fit))
+
+Box.test(residuals(fit), lag = h, type=c("Box-Pierce"),fitdf = 4)
+Box.test(residuals(fit), lag = h, type=c("Ljung-Box"),fitdf = 4)
+Box.test(residuals(fit)**2, lag = h, type=c("Ljung-Box"),fitdf = 0)
+shapiro.test(residuals(fit))
+
+par(mfrow=c(1,2),oma=c(0,0,2,0))
+op <- par(mfrow=c(2,2))
+acf(residuals(fit),main = "Autocorrelation")
+pacf(residuals(fit),main = "Partial Autocorrelation")
+hist(residuals(fit),main = "Histogram")
+qqnorm(residuals(fit))
+qqline(residuals(fit),col ="blue")
+# Add overall title
+title("Fitted Residuals Diagnostics", outer=TRUE)
+par(op)
+
+# acf, pacf looks fine; normality test passed by qq plot & histogram
+```
+
+
+
