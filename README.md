@@ -8,7 +8,7 @@ Programming Language: R <br>
 
 ## Question: 
 
-Given the Melbourne temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality) and perform anomaly detection, then model the time series using SARIMA and make predictions for Melbourne temperature in 1991. <br>
+Given the Melbourne temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality), perform anomaly detection, model the time series using SARIMA, then make predictions for Melbourne temperature in 1991. <br>
 
 
 
