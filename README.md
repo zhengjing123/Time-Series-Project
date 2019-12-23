@@ -92,26 +92,3 @@ Our group uses three kinds of tools to carry out the core analysis: R, python an
 
    (4) Our goal was to explore the data and do the inference. But beyond that we are also interested in prediction. For doing so we can split dataset into training and testing sets and use MSE to evaluate our model.
 
-
-## Group Collaboration:
-Although we have been working in different programming environments, we peer reviewed each other's script and we had some group meeting to discuss some problems. Here are some points:
-
-1.  In Stata, we first incorrectly used the individual food dataset as the total nutrient data, which would result in multiple rows with the same SEQN.
-
-2.  In R, we first recoded the diabetes from (1,2) to (1,0), which would lead to the wrong sign of the coefficients in the logistic output. 
-
-3.  We forgot to center the continuous variable, which would make interpretation of intercepts difficult. In logistic regression, we always need to center predictors. 
-
-4.  In python, we forgot to remove the meaningless values such as "999" and ”777" for alcohol. 
-
-5.  In python, the categorical variables need to be manually added to the design matrix before running the logistic regression. 
-
-6.  The old alcohol variable is not appropriate (ALQ110). Therefore we use "ALQ130" instead and it represents the average alcoholic drink per day. 
-
-
-
-## References:
-
-1. Faraway, Julian J. *Extending the linear model with R: generalized linear, mixed effects and nonparametric regression models*. Chapman and Hall/CRC, 2016.
-2. [American Diabetes Association](https://www.diabetes.org/), 1995 - 2019.
-
