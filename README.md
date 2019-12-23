@@ -1,6 +1,7 @@
 
 
-# Time Series Project - Modeling the temperature in Melbourne, Australia from 1971 to 1990
+# Time Series Project - <br>
+## Modeling the temperature in Melbourne, Australia from 1971 to 1990
 
 Author: Zheng Jing (Rstudio)<br />
 
