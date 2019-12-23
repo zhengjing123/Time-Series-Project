@@ -1,15 +1,14 @@
 
+# Time Series Project <br>
+## Modeling the temperature in Melbourne, Australia from 1971 to 1990 <br>
 
-# Time Series Project - <br>
-## Modeling the temperature in Melbourne, Australia from 1971 to 1990
-
-Author: Zheng Jing (Rstudio)<br />
+Author: Zheng Jing <br>
+Programming Language: R <br>
 
 
 ## Question: 
 
-Given the temperatre in Melbourne from 1971 to 1990, analyze the pattern (trend & seasonality) of the time series data; <br />
-Also analyze the anomaly point, and make predictions for 1991 temperature. <br>
+Given the one dimensional temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality) as well as anomaly detection, model the time series using SARIMA, then make predictions for 1991 temperature. <br>
 
 
 
