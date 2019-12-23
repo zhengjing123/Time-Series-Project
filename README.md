@@ -8,37 +8,13 @@ Programming Language: R <br>
 
 ## Question: 
 
-Given the one dimensional temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality) as well as anomaly detection, model the time series using SARIMA, then make predictions for 1991 temperature. <br>
+Given the Melbourne temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality) and perform anomaly detection, then model the time series using SARIMA and make predictions for 1991 temperature. <br>
 
 
 
-## Variable selection:
-
-### Data source:
-
- <https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx>
-
-Here we use survey data in the 2015 - 2016 cycle.
-
-### Response variable: 
-
-| Variable | Description                   | Data Type        | Dataset   |
-| -------- | ----------------------------- | ---------------- | --------- |
-| DIQ010   | Doctor told you have diabetes | Categorical. 0/1 | DIQ_I.XPT |
-
-### Predictor variables:
-
-| Variable  | Description                                         |         Data Type         | Dataset      |
-| --------- | --------------------------------------------------- | :-----------------------: | ------------ |
-| RIAGENDER | Gender(1: male;  2: female)                         |     Categorical. 1/2      | DEMO_I.XPT   |
-| RIDAGEYR  | Age in years at screening                           | Positive Integer. [18,80] | DEMO_I.XPT   |
-| ALQ130    | Average alcoholic drinks/day  in the past 12 months | Positive Integer. [0,15]  | ALQ_I.XPT    |
-| DR1TSUGR  | Total sugar (gm)                                    |  Double. [0.33, 533.44]   | DR1TOT_I.XPT |
-| DR1TTFAT  | Total fat (gm)                                      |  Double. [3.54, 498.63]   | DR1TOT_I.XPT |
-| OCQ260    | Description of job/work situation                   |    Categorical. 1/2/3     | OCQ_I.XPT    |
-| SLD012    | Sleep hours                                         |    Double. [3.0, 2.0]     | SLQ_I.XPT    |
-
-
+## Data:
+https://pkg.yangzhuoranyang./tsdl/
+The dataset was released by Australian Bureau of Meteorology, which records the monthly data of mean maximum temperature in Melbourne from Jan. 1971 to Dec. 1990.
 
 ## Method Introduction:
 
