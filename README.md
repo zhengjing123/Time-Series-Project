@@ -17,13 +17,20 @@ The dataset was released by Australian Bureau of Meteorology, which records the 
 
 
 ## Methodology:
-split data into training and testing <br>
-plot original time series; autocorrelation & partial autocorrelation plot <br>
-transform and difference data <br>
-fit SARIMA model <br>
-diagnose candidate models- checking unit roots, residual behavior, periodicity <br>
-evaluate model on testig set <br>
-predict the temperature in 1991 with C.I. <br>
+
+​ a) split data into training and testing <br>
+
+​ b) plot original time series; plot autocorrelation & partial autocorrelation <br>
+
+​ c) transform and difference data <br>
+
+​ d) fit SARIMA model <br>
+
+​ e) diagnose candidate models- checking unit roots, residual behavior... <br>
+
+​ f) evaluate model on testig set <br>
+
+​ g) predict the temperature in 1991 with C.I. <br>
 
 <div align="center"><a href="https://www.codecogs.com/eqnedit.php?latex=\\log(\frac{p}{1-p})" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\\log(\frac{p}{1-p})" title="\\log(\frac{p}{1-p})" /></a></div>
 
