@@ -35,7 +35,7 @@ The dataset was released by Australian Bureau of Meteorology, which records the 
 
 ## Conclusion:
 
-Our final model - SARIMA(2,2,2)*(0,1,1) as follows:
+Our final model is SARIMA(2,2,2)*(0,1,1), the mathematical formula as follows:
 
 (1 - 1.3636B - 0.5909B^{2})\diff_s 12X_{t} = (1 - 1.3647 + 0.6943B^{2})(1-0.9308B^{12})Z_{t}
 
