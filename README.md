@@ -41,4 +41,4 @@ Our final model - SARIMA(2,2,2)*(0,1,1) as follows:
 
 Based on the model, we predict the temperature in 1991 to share the same pattern as previous years, which is warm at the beginning and end of the year, and turning cold in the middle. We also make predictions on mean max temp for each month with plus/minus three bound.
 
-For example, we predict the mean max temperature in Melbourne in Jan. 1991  to be 26 Celcius (+/- 4), and 10 (+/-3) in July.
+For example, we predict the mean max temperature in Melbourne in Jan. 1991  to be 26 Celcius(+/- 4), and 10 Celcius(+/-3) in July.
