@@ -40,3 +40,5 @@ Our final model - SARIMA(2,2,2)*(0,1,1) as follows:
 (1 - 1.3636B - 0.5909B^{2})\diff_s 12X_{t} = (1 - 1.3647 + 0.6943B^{2})(1-0.9308B^{12})Z_{t}
 
 Based on the model, we predict the temperature in 1991 to share the same pattern as previous years, which is warm at the beginning and end of the year, and turning cold in the middle. We also make predictions on mean max temp for each month with plus/minus three bound.
+
+For example, we predict the mean max temperature in Melbourne in Jan. 1991  to be 26 Celcius (+/- 4), and 10 (+/-3) in July.
