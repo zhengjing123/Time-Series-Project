@@ -11,14 +11,19 @@ Programming Language: R <br>
 Given the Melbourne temperatre data from 1971 to 1990, analyze its pattern (trend & seasonality), perform anomaly detection, fit SARIMA model, then make predictions for Melbourne temperature in 1991. <br>
 
 
-
 ## Data:
-https://pkg.yangzhuoranyang./tsdl/
+https://pkg.yangzhuoranyang./tsdl/ <br>
 The dataset was released by Australian Bureau of Meteorology, which records the monthly data of mean maximum temperature in Melbourne from Jan. 1971 to Dec. 1990.
 
-## Method Introduction:
 
-In statistics, the logistic model is used to model the probability of a certain class, such as pass/fail, win/lose, alive/dead or healthy/sick. <br />Here, our response variable is binary (diabetes or not). In ordinary linear model, the response variable range from negative infinite to positive infinite. Therefore, in order to  model a binary dependent variable, we need to use a logistic function as a link function: <br />
+## Methodology:
+split data into training and testing <br>
+plot original time series; autocorrelation & partial autocorrelation plot <br>
+transform and difference data <br>
+fit SARIMA model <br>
+diagnose candidate models- checking unit roots, residual behavior, periodicity <br>
+evaluate model on testig set <br>
+predict the temperature in 1991 with C.I. <br>
 
 <div align="center"><a href="https://www.codecogs.com/eqnedit.php?latex=\\log(\frac{p}{1-p})" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\\log(\frac{p}{1-p})" title="\\log(\frac{p}{1-p})" /></a></div>
 
@@ -40,7 +45,7 @@ Then we fit a logistic regression using diabetes as the response variable and al
 
 
 
-## File description:
+## Conclusion:
 
 Our group uses three kinds of tools to carry out the core analysis: R, python and Stata.
 
